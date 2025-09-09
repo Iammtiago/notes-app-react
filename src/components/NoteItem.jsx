@@ -141,12 +141,6 @@ export default function NoteItem({ note, onUpdate, onDelete }) {
           </>
         ) : (
           <>
-            {/* <Button
-              className="btn-ghost"
-              onClick={() => setEditing((prev) => !prev)}
-            >
-              Edit
-            </Button> */}
             <Button className="btn-ghost" onClick={() => onDelete(note.id)}>
               Delete
             </Button>
