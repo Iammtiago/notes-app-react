@@ -27,6 +27,7 @@ export function NotesProvider({ children }) {
       .select("*")
       .eq("user_id", user.id)
       .order("updated_at", { ascending: false });
+
     setLoading(false);
     if (error) throw error;
     setNotes(data ?? []);

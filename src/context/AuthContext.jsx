@@ -13,6 +13,9 @@ export function AuthProvider({ children }) {
       const {
         data: { session },
       } = await supabase.auth.getSession();
+      if (!session) {
+        await signOut();
+      }
       setUser(session?.user ?? null);
       setLoading(false);
     };
@@ -43,8 +46,19 @@ export function AuthProvider({ children }) {
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        console.warn("Error al cerrar sesión:", error.message);
+        throw error;
+      }
+    } catch (err) {
+      console.warn("Fallo en signOut, limpiando sesión local...");
+      // Limpieza manual (si usas cookies o localStorage)
+      localStorage.clear();
+      sessionStorage.clear();
+    }
   };
 
   return (

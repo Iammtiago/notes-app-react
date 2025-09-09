@@ -22,8 +22,8 @@ export default function NoteItem({ note, onUpdate, onDelete }) {
         setTextArea(textoFormateado);
       }
 
-      await onUpdate(note.id, updatedNote);
       setSubnotes(updatedNote.text);
+      await onUpdate(note.id, updatedNote);
     };
 
     ejecutarActualizacion();
@@ -51,12 +51,10 @@ export default function NoteItem({ note, onUpdate, onDelete }) {
         ];
       }
 
-      setUpdatedNote((prev) => {
-        return {
-          ...prev,
-          text: [...noteSaved],
-        };
-      });
+      setUpdatedNote((prev) => ({
+        ...prev,
+        text: [...noteSaved],
+      }));
 
       // await onUpdate(note.id, updatedNote);
       setEditing(false);
@@ -76,7 +74,7 @@ export default function NoteItem({ note, onUpdate, onDelete }) {
           />
         ) : (
           <>
-            {subnotes.length > 1 && (
+            {subnotes.length > 1 || subnotes[0]?.text.includes("-") ? (
               <>
                 <div className="text-gray-800 whitespace-pre-wrap">
                   {subnotes.map((n, index) => (
@@ -86,16 +84,14 @@ export default function NoteItem({ note, onUpdate, onDelete }) {
                         className="mr-2"
                         checked={n.isCompleted}
                         onChange={async () => {
-                          n.isCompleted = !n.isCompleted;
-                          // updatedNote.text[index] = n; // !
-                          // setUpdatedNote({
-                          //   ...updatedNote,
-                          //   text: note.text,
-                          // });
-                          note.text[index] = n; // !
-                          setUpdatedNote({
-                            ...updatedNote,
-                            text: note.text,
+                          // n.isCompleted = !n.isCompleted;
+                          setUpdatedNote((prev) => {
+                            const nuevaLista = [...prev.text];
+                            nuevaLista[index] = {
+                              ...nuevaLista[index],
+                              isCompleted: !n.isCompleted,
+                            };
+                            return { ...prev, text: [...nuevaLista] };
                           });
                           // await onUpdate(note.id, updatedNote);
                         }}
@@ -106,7 +102,9 @@ export default function NoteItem({ note, onUpdate, onDelete }) {
                           n.isCompleted ? "line-through text-gray-700" : ""
                         }
                       >
-                        {n.text}
+                        {n.text.includes("-")
+                          ? n.text.replace("-", "")
+                          : n.text}
                       </span>
                       <span>{n.isCompleted ? "✔️ " : ""}</span>
                       <br />
@@ -114,8 +112,7 @@ export default function NoteItem({ note, onUpdate, onDelete }) {
                   ))}
                 </div>
               </>
-            )}
-            {subnotes.length === 1 && (
+            ) : (
               <>
                 <p className="text-gray-800 whitespace-pre-wrap">
                   {updatedNote.text?.map((note) => note.text)}
