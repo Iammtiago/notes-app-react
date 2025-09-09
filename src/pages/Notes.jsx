@@ -16,7 +16,22 @@ export default function NotesPage() {
     const text = draft.trim();
     if (!text) return;
     try {
-      await addNote(text);
+      let note;
+      if (text.includes("\n") && text.includes("-")) {
+        note = text.split("\n").map((line, index) => {
+          if (line.includes("-")) {
+            return {
+              id: index,
+              text: line.replace("-", "").trimStart(),
+              isCompleted: false,
+            };
+          }
+          return { id: index, text: line.trimStart(), isCompleted: false };
+        });
+      } else {
+        note = [{ id: 0, text: text.trimStart(), isCompleted: false }];
+      }
+      await addNote(note);
       setDraft("");
     } catch (e) {
       alert(e.message);
@@ -35,36 +50,74 @@ export default function NotesPage() {
         </Button>
       </header>
 
-      <main className="max-w-3xl mx-auto grid gap-4">
-        <Card>
-          <Input
-            label="New note"
-            placeholder="Write something..."
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-          />
-          <div className="flex justify-end">
-            <Button className="btn-primary" onClick={submit}>
-              Add
-            </Button>
-          </div>
-        </Card>
+      <main className="max-w-4xl mx-auto my-10 grid grid-cols-1 gap-4">
+        <div className="justify-self-center grid gap-4">
+          <Card>
+            {/* <Input
+              label="New note"
+              placeholder="Write something..."
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+            /> */}
+            <label className="label">New note</label>
+            <div className="flex justify-center items-center gap-2">
+              <textarea
+                className="input min-h-[80px]"
+                placeholder="Write something..."
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+              />
+              <Button className="btn-primary" onClick={submit}>
+                Add
+              </Button>
+            </div>
+          </Card>
 
-        {loading ? (
-          <Card>
-            <p>Loading notes…</p>
-          </Card>
-        ) : notes.length === 0 ? (
-          <Card>
-            <p className="text-gray-500">No notes yet. Start by adding one.</p>
-          </Card>
-        ) : (
-          notes.map((n) => (
-            <Card key={n.id} className="p-4">
-              <NoteItem note={n} onUpdate={updateNote} onDelete={deleteNote} />
+          {loading ? (
+            <Card>
+              <p>Loading notes…</p>
             </Card>
-          ))
-        )}
+          ) : notes.length === 0 ? (
+            <Card>
+              <p className="text-gray-500">
+                No notes yet. Start by adding one.
+              </p>
+            </Card>
+          ) : (
+            notes?.map((n) => (
+              <Card key={n.id} className="p-4">
+                <NoteItem
+                  note={n}
+                  onUpdate={updateNote}
+                  onDelete={deleteNote}
+                />
+              </Card>
+            ))
+          )}
+        </div>
+        {/* {
+  "id": 9,
+  "user_id": "70bd6399-62af-4aa5-a2e1-2c6cd0cd4cbc",
+  "text": [
+    {
+      "id": 0,
+      "text": "prueba quitando los guiones",
+      "isCompleted": true
+    },
+    {
+      "id": 1,
+      "text": "si ",
+      "isCompleted": false
+    },
+    {
+      "id": 2,
+      "text": "no",
+      "isCompleted": false
+    }
+  ],
+  "created_at": "2025-09-05T19:27:41.268242+00:00",
+  "updated_at": "2025-09-05T19:27:41.268242+00:00"
+} */}
       </main>
     </div>
   );

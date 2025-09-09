@@ -9,7 +9,6 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load session on mount
     const init = async () => {
       const {
         data: { session },
@@ -19,7 +18,6 @@ export function AuthProvider({ children }) {
     };
     init();
 
-    // Listen to auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {

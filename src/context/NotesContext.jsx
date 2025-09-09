@@ -44,7 +44,7 @@ export function NotesProvider({ children }) {
   const updateNote = async (id, text) => {
     const { data, error } = await supabase
       .from("notes")
-      .update({ text })
+      .update(text)
       .eq("id", id)
       .select();
     if (error) throw error;

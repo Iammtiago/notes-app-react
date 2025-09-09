@@ -21,10 +21,12 @@ export default function AuthPage() {
 
   const submit = async () => {
     setMessage(null);
+
     if (!isValidEmail(email)) {
       setMessage({ type: "error", text: "Please enter a valid email." });
       return;
     }
+
     if (!isValidPassword(password)) {
       setMessage({
         type: "error",
@@ -32,13 +34,14 @@ export default function AuthPage() {
       });
       return;
     }
+
     setLoading(true);
     try {
       if (mode === "login") {
         await signIn({ email, password });
         setMessage({ type: "success", text: "Logged in successfully." });
       } else {
-        const data = await signUp({ email, password });
+        await signUp({ email, password });
         setMessage({
           type: "success",
           text: "Registration successful. Check your email to confirm if required.",
@@ -55,7 +58,7 @@ export default function AuthPage() {
     <div className="container-centered">
       <Card>
         <div className="flex flex-col items-center gap-2 mb-4">
-          <div className="badge">{mode === "login" ? "Login" : "Register"}</div>
+          <div className="badge">{mode}</div>
           <h1 className="text-2xl font-semibold text-gray-900">Notes App</h1>
           <p className="text-gray-500 text-sm text-center">
             Sign {mode === "login" ? "in" : "up"} with your email and password.
@@ -69,6 +72,7 @@ export default function AuthPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+
         <Input
           label="Password"
           type="password"
@@ -77,11 +81,7 @@ export default function AuthPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {message && (
-          <p className={message.type === "error" ? "error" : "success"}>
-            {message.text}
-          </p>
-        )}
+        {message && <p className={message.type}>{message.text}</p>}
 
         <div className="mt-4 flex items-center gap-3">
           <Button
